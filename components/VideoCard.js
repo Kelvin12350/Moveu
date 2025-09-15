@@ -1,56 +1,64 @@
-// components/VideoCard.js
-import React, { useRef, useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import { supabase } from '../lib/supabase'
+import styles from '../styles/VideoFeed.module.css'
 
-export default function VideoCard({ video }) {
-  const vidRef = useRef(null)
-  const [playing, setPlaying] = useState(true)
-  const [muted, setMuted] = useState(true)
+export default function VideoFeed() {
+  const [videos, setVideos] = useState([])
+  const containerRef = useRef(null)
 
   useEffect(() => {
-    const v = vidRef.current
-    if (!v) return
-    // Ensure autoplay attempt
-    v.muted = true
-    v.play().catch(() => {
-      // autoplay might fail — that's OK
-    })
+    fetchVideos()
   }, [])
 
-  function handleTap() {
-    const v = vidRef.current
-    if (!v) return
-    if (v.paused) {
-      v.play().catch(() => {})
-      setPlaying(true)
+  async function fetchVideos() {
+    const { data, error } = await supabase.from('videos').select('*')
+    if (error) {
+      console.error('Error fetching videos:', error)
     } else {
-      v.pause()
-      setPlaying(false)
-    }
-    // On first tap, unmute
-    if (muted) {
-      v.muted = false
-      setMuted(false)
+      setVideos(data)
     }
   }
 
-  const src = video?.url || video?.video_url || ''
+  // Auto-play videos when visible
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target
+          if (entry.isIntersecting) {
+            video.play()
+          } else {
+            video.pause()
+          }
+        })
+      },
+      { threshold: 0.8 }
+    )
+
+    const videoElements = containerRef.current?.querySelectorAll('video') || []
+    videoElements.forEach((video) => observer.observe(video))
+
+    return () => {
+      videoElements.forEach((video) => observer.unobserve(video))
+    }
+  }, [videos])
 
   return (
-    <div className="video-wrapper" onClick={handleTap} role="button" tabIndex={0}>
-      <video
-        ref={vidRef}
-        src={src}
-        className="video-full"
-        autoPlay
-        loop
-        muted
-        playsInline
-        webkit-playsinline="true"
-      />
-      <div className="video-meta">
-        <h2 className="video-title">@{video?.title ?? 'Sample Video'}</h2>
-        {video?.description ? <p className="video-desc">{video.description}</p> : null}
-      </div>
+    <div ref={containerRef} className={styles.feed}>
+      {videos.map((video) => (
+        <div key={video.id} className={styles.videoWrapper}>
+          <video
+            src={video.url}
+            className={styles.video}
+            loop
+            muted
+            playsInline
+          />
+          <div className={styles.caption}>
+            <h3>{video.title}</h3>
+          </div>
+        </div>
+      ))}
     </div>
   )
-    }
+  }
