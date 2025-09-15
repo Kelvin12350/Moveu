@@ -27,7 +27,6 @@ export default function Home() {
     fetchVideos();
   }, []);
 
-  // Auto-play the video currently in view
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -40,7 +39,7 @@ export default function Home() {
           }
         });
       },
-      { threshold: 0.6 } // play only if 60% of video is visible
+      { threshold: 0.8 } // must be 80% visible to play
     );
 
     videoRefs.current.forEach((video) => {
@@ -60,22 +59,22 @@ export default function Home() {
 
   return (
     <div className="feed">
-      {videos.length === 0 ? (
-        <p className="text-center text-gray-400 mt-10">
-          No videos uploaded yet.
-        </p>
-      ) : (
-        <div className="snap-list">
-          {videos.map((video, index) => (
+      <div className="snap-list">
+        {videos.length === 0 ? (
+          <p className="text-center text-gray-400 mt-10">
+            No videos uploaded yet.
+          </p>
+        ) : (
+          videos.map((video, index) => (
             <div key={video.id} className="snap-item">
               <VideoCard
                 video={video}
                 videoRef={(el) => (videoRefs.current[index] = el)}
               />
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
-  }
+                      }
