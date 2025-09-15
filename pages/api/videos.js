@@ -1,24 +1,21 @@
 // pages/api/videos.js
-export default async function handler(req, res) {
-  if (req.method === "GET") {
-    try {
-      // Example: replace with your DB fetch
-      const videos = [
-        // Example static data while testing
-        {
-          id: 1,
-          title: "Sample Video",
-          url: "https://www.w3schools.com/html/mov_bbb.mp4",
-        },
-      ];
+import { supabase } from "../../utils/supabaseClient";
 
-      res.status(200).json(videos || []); // always return an array
-    } catch (error) {
-      console.error("Error fetching videos:", error);
-      res.status(200).json([]); // fallback empty array
+export default async function handler(req, res) {
+  try {
+    const { data, error } = await supabase
+      .from("videos")
+      .select("id, title, url, thumbnail")
+      .order("id", { ascending: false });
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({ error: error.message });
     }
-  } else {
-    res.setHeader("Allow", ["GET"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+
+    return res.status(200).json(data);
+  } catch (err) {
+    console.error("API error:", err);
+    return res.status(500).json({ error: "Unexpected server error" });
   }
 }
