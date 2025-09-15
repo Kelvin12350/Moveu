@@ -1,0 +1,87 @@
+/* basic reset */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #__next { height: 100%; }
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #000; color: #fff; }
+
+/* navbar */
+.nav {
+  height: 64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 0 16px;
+  background: #000;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.brand { color: #ff007f; font-size: 26px; }
+.upload-link { color: #fff; text-decoration: none; }
+
+/* feed container uses scroll snap to emulate vertical swiping */
+.feed {
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+
+.snap-list { }
+.snap-item {
+  height: calc(100vh - 64px); /* full viewport minus navbar */
+  scroll-snap-align: start;
+  position: relative;
+}
+
+/* video styling */
+.video-wrap {
+  height: 100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position: relative;
+  background: #000;
+}
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* overlays */
+.overlay-left {
+  position: absolute;
+  left: 14px;
+  bottom: 80px;
+  max-width: 65%;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+}
+.title { font-size: 20px; color: #fff; margin-bottom: 8px; }
+.desc { font-size: 14px; color: #ddd; }
+
+/* right side icons */
+.overlay-right {
+  position: absolute;
+  right: 12px;
+  bottom: 100px;
+  display:flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+}
+.profile-pic {
+  width: 56px; height:56px; border-radius: 50%;
+  background: #222; display:flex; align-items:center; justify-content:center; font-size:24px;
+}
+.icon { display:flex; flex-direction:column; align-items:center; font-size:20px; color: #fff; }
+.count { font-size:12px; color:#ddd; margin-top:6px; }
+
+/* upload page */
+.upload-page { padding: 24px; color: #fff; }
+.upload-form { display:flex; gap:8px; flex-direction:column; max-width:600px; }
+.upload-form input[type="file"] { color: #fff; }
+.upload-form input, .upload-form textarea { padding:8px; border-radius:6px; border:1px solid #333; background: #111; color:#fff; }
+.upload-form button { padding:10px 14px; background: #ff007f; color:#fff; border:none; border-radius:8px; cursor:pointer; }
+.msg { margin-top: 8px; color: #ffd; }
+
+/* small helpers */
+.loading, .empty { padding: 16px; text-align:center; color:#ddd; }
