@@ -1,37 +1,68 @@
-/* Reset */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-html,
-body,
-#__next {
+/* styles/globals.css - append these rules */
+
+html, body, #__next {
   height: 100%;
-}
-body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial;
+  margin: 0;
   background: #000;
   color: #fff;
-  overflow: hidden; /* stop body scroll */
 }
 
-/* TikTok feed */
+/* the feed uses scroll snap to make each video fullscreen and snap */
 .feed {
-  height: 100vh;                /* full screen height */
-  overflow-y: scroll;           /* scroll vertically */
+  height: 100vh;
+  width: 100%;
+  overflow-y: scroll;
   scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
-.snap-list {
-  display: flex;
-  flex-direction: column;
-}
-
+/* each item fills the viewport */
 .snap-item {
-  flex: 0 0 100vh;              /* each takes up exactly one screen */
-  height: 100vh;                /* enforce full height */
+  height: 100vh;
+  width: 100%;
   scroll-snap-align: start;
+}
+
+/* wrapper ensures the video covers 100% of viewport */
+.video-wrapper {
+  width: 100%;
+  height: 100vh;
   position: relative;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* the actual video covers the container (crop if needed) */
+.video-full {
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  display: block;
+}
+
+/* overlay meta (title/description) */
+.video-meta {
+  position: absolute;
+  left: 14px;
+  bottom: 18px;
+  z-index: 10;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  max-width: 85%;
+}
+
+.video-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.video-desc {
+  margin: 6px 0 0 0;
+  font-size: 14px;
+  opacity: 0.95;
 }
