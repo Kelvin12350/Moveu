@@ -1,5 +1,10 @@
 import { useEffect, useState, useRef } from "react";
-import { supabase } from "../utils/supabaseClient";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 export default function Home() {
   const [videos, setVideos] = useState([]);
@@ -8,60 +13,62 @@ export default function Home() {
   useEffect(() => {
     const fetchVideos = async () => {
       const { data, error } = await supabase.from("videos").select("*");
-      if (error) console.error(error);
-      else setVideos(data);
+      if (error) {
+        console.error("Error fetching videos:", error);
+      } else {
+        setVideos(data || []);
+      }
     };
-
     fetchVideos();
   }, []);
 
-  // Pause videos that are not in view
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target;
           if (entry.isIntersecting) {
-            video.play().catch(() => {}); // Try autoplay
+            video.play().catch(() => {});
           } else {
             video.pause();
           }
         });
       },
-      { threshold: 0.7 } // play only if 70% visible
+      { threshold: 0.8 }
     );
 
     videoRefs.current.forEach((video) => {
       if (video) observer.observe(video);
     });
 
-    return () => observer.disconnect();
+    return () => {
+      videoRefs.current.forEach((video) => {
+        if (video) observer.unobserve(video);
+      });
+    };
   }, [videos]);
 
   return (
-    <div className="h-screen w-screen bg-black overflow-y-scroll snap-y snap-mandatory">
-      {videos.map((video, idx) => (
+    <div className="w-screen h-screen bg-black text-white overflow-y-scroll snap-y snap-mandatory">
+      {videos.map((video, index) => (
         <div
           key={video.id}
-          className="h-screen w-screen flex items-center justify-center snap-start relative"
+          className="w-screen h-screen flex items-center justify-center snap-start"
         >
-          {/* Video */}
           <video
-            ref={(el) => (videoRefs.current[idx] = el)}
+            ref={(el) => (videoRefs.current[index] = el)}
             src={video.url}
-            className="h-full w-full object-cover"
-            autoPlay
-            loop
+            className="w-full h-full object-cover"
             muted
+            loop
             playsInline
+            autoPlay
           />
-
-          {/* Overlay Title */}
-          <div className="absolute bottom-16 left-4 text-white">
-            <h2 className="text-xl font-bold">{video.title}</h2>
+          <div className="absolute bottom-10 left-5 text-xl font-bold">
+            {video.title}
           </div>
         </div>
       ))}
     </div>
   );
-    }
+              }
