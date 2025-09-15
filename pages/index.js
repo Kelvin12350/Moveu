@@ -1,47 +1,50 @@
+// pages/index.js
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
-import VideoCard from "../components/VideoCard";
 
 export default function Home() {
-  const [videos, setVideos] = useState([]); // default empty array
-  const [loading, setLoading] = useState(true);
+  const [videos, setVideos] = useState([]);
 
   useEffect(() => {
     async function fetchVideos() {
       try {
-        const { data, error } = await supabase
-          .from("videos")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (error) throw error;
-
-        setVideos(data || []); // always set an array
+        const res = await fetch("/api/videos");
+        const data = await res.json();
+        setVideos(data);
       } catch (err) {
-        console.error("Error fetching videos:", err.message);
-        setVideos([]); // fallback to empty array
-      } finally {
-        setLoading(false);
+        console.error("Failed to fetch videos:", err);
       }
     }
-
     fetchVideos();
   }, []);
 
-  if (loading) {
-    return <p className="text-center mt-10">Loading videos...</p>;
+  if (videos.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-black text-white">
+        <h1>No videos uploaded yet.</h1>
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white">
-      <h1 className="text-3xl font-bold my-6">My TikTok App</h1>
-      <div className="w-full max-w-md space-y-6">
-        {videos.length === 0 ? (
-          <p className="text-center text-gray-400">No videos uploaded yet.</p>
-        ) : (
-          videos.map((video) => <VideoCard key={video.id} video={video} />)
-        )}
-      </div>
+    <div className="h-screen w-screen overflow-y-scroll snap-y snap-mandatory bg-black">
+      {videos.map((video) => (
+        <div
+          key={video.id}
+          className="h-screen w-screen flex flex-col items-center justify-center snap-start relative"
+        >
+          <video
+            src={video.url}
+            controls
+            autoPlay
+            loop
+            playsInline
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute bottom-20 left-5 text-white">
+            <h2 className="text-xl font-bold">{video.title}</h2>
+          </div>
+        </div>
+      ))}
     </div>
   );
-    }
+              }
