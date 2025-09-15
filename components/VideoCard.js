@@ -6,9 +6,6 @@ export default function VideoCard({ video, videoRef }) {
         height: "100%",
         position: "relative",
         background: "black",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
       }}
     >
       <video
@@ -24,7 +21,7 @@ export default function VideoCard({ video, videoRef }) {
         }}
       />
 
-      {/* Overlay text (title + description) */}
+      {/* Overlay text */}
       <div
         style={{
           position: "absolute",
@@ -39,4 +36,4 @@ export default function VideoCard({ video, videoRef }) {
       </div>
     </div>
   );
-      }
+          }
