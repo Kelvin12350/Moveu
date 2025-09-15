@@ -14,12 +14,13 @@ body {
     Arial;
   background: #000;
   color: #fff;
+  overflow: hidden; /* stop body scroll */
 }
 
-/* TikTok feed scroll */
+/* TikTok feed */
 .feed {
-  height: 100vh;
-  overflow-y: auto;
+  height: 100vh;                /* full screen height */
+  overflow-y: scroll;           /* scroll vertically */
   scroll-snap-type: y mandatory;
 }
 
@@ -29,7 +30,8 @@ body {
 }
 
 .snap-item {
-  flex: 0 0 100vh; /* each video takes full screen */
+  flex: 0 0 100vh;              /* each takes up exactly one screen */
+  height: 100vh;                /* enforce full height */
   scroll-snap-align: start;
   position: relative;
 }
