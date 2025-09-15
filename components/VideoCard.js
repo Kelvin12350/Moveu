@@ -1,4 +1,4 @@
-export default function VideoCard({ video }) {
+export default function VideoCard({ video, videoRef }) {
   return (
     <div
       style={{
@@ -12,11 +12,11 @@ export default function VideoCard({ video }) {
       }}
     >
       <video
+        ref={videoRef}
         src={video.url}
-        controls
-        autoPlay
         loop
         muted
+        playsInline
         style={{
           width: "100%",
           height: "100%",
@@ -39,4 +39,4 @@ export default function VideoCard({ video }) {
       </div>
     </div>
   );
-}
+      }
