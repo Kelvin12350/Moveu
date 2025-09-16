@@ -1,79 +1,60 @@
-import { useRef, useState, useEffect } from "react";
-import { FaHeart, FaCommentDots, FaShare } from "react-icons/fa";
-import { HiSpeakerXMark, HiSpeakerWave } from "react-icons/hi2";
+import { useEffect, useRef, useState } from "react";
 
-export default function VideoCard({ url, playing }) {
+export default function VideoCard({ video, isActive }) {
   const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [muted, setMuted] = useState(true);
-  const [showControls, setShowControls] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [showPause, setShowPause] = useState(false);
 
   useEffect(() => {
-    if (playing) {
-      videoRef.current.play().catch(() => {});
-      setIsPlaying(true);
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
+    if (videoRef.current) {
+      if (isActive) {
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+      }
     }
-  }, [playing]);
+  }, [isActive]);
 
-  const handleTogglePlay = () => {
-    if (isPlaying) {
-      videoRef.current.pause();
-    } else {
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+
+    if (videoRef.current.paused) {
       videoRef.current.play();
+      setShowPause(true);
+      setTimeout(() => setShowPause(false), 1200); // hide after 1.2s
+    } else {
+      videoRef.current.pause();
+      setShowPause(true);
+      setTimeout(() => setShowPause(false), 1200);
     }
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleToggleMute = () => {
-    setMuted(!muted);
-    videoRef.current.muted = !videoRef.current.muted;
-  };
-
-  const handleTap = () => {
-    setShowControls(true);
-    setTimeout(() => setShowControls(false), 1500);
   };
 
   return (
-    <div
-      className="relative h-screen w-full bg-black flex items-center justify-center"
-      onClick={handleTap}
-    >
+    <div className="relative h-screen w-full flex items-center justify-center bg-black">
       <video
         ref={videoRef}
-        src={url}
-        loop
-        muted={muted}
+        src={video.url}
         className="h-full w-full object-cover"
+        muted={isMuted}
+        loop
+        playsInline
+        onClick={togglePlay}
       />
 
-      {/* Sidebar icons */}
-      <div className="absolute right-4 top-1/3 flex flex-col space-y-6 text-white text-2xl">
-        <FaHeart className="cursor-pointer" />
-        <FaCommentDots className="cursor-pointer" />
-        <FaShare className="cursor-pointer" />
-      </div>
-
-      {/* Play/Pause button (only shows on tap) */}
-      {showControls && (
-        <button
-          onClick={handleTogglePlay}
-          className="absolute text-white text-5xl"
-        >
-          {isPlaying ? "❚❚" : "▶"}
-        </button>
+      {/* Pause Icon (auto hides after delay) */}
+      {showPause && (
+        <div className="absolute text-white text-6xl">
+          ⏸
+        </div>
       )}
 
-      {/* Mute/Unmute button (always visible) */}
+      {/* Mute/Unmute Button (always visible) */}
       <button
-        onClick={handleToggleMute}
-        className="absolute bottom-6 left-4 text-white text-2xl bg-black/40 p-2 rounded-full"
+        onClick={() => setIsMuted(!isMuted)}
+        className="absolute bottom-20 right-5 bg-black bg-opacity-50 p-3 rounded-full text-white text-xl"
       >
-        {muted ? <HiSpeakerXMark /> : <HiSpeakerWave />}
+        {isMuted ? "🔇" : "🔊"}
       </button>
     </div>
   );
-          }
+}
