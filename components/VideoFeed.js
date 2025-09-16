@@ -1,49 +1,35 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
 
 export default function VideoFeed() {
   const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVideos = async () => {
+    async function fetchVideos() {
       try {
-        const res = await fetch("/api/videos"); // calls our API route
+        const res = await fetch("/api/videos");
         const data = await res.json();
         setVideos(data);
-      } catch (error) {
-        console.error("Error fetching videos:", error);
-      } finally {
-        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching videos:", err);
       }
-    };
-
+    }
     fetchVideos();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen text-white">
-        Loading videos...
-      </div>
-    );
-  }
-
-  if (videos.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-screen text-white">
-        No videos found.
-      </div>
-    );
-  }
-
   return (
-    <div className="h-screen w-screen snap-y snap-mandatory overflow-y-scroll bg-black">
-      {videos.map((src, idx) => (
-        <div key={idx} className="snap-start h-screen w-screen">
-          <VideoCard src={src} />
+    <div className="snap-y snap-mandatory h-screen overflow-y-scroll">
+      {videos.length > 0 ? (
+        videos.map((url, idx) => (
+          <div key={idx} className="snap-start h-screen">
+            <VideoCard src={url} />
+          </div>
+        ))
+      ) : (
+        <div className="flex items-center justify-center h-screen text-white">
+          Loading videos...
         </div>
-      ))}
+      )}
     </div>
   );
 }
