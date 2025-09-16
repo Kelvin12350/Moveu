@@ -1,60 +1,45 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Home() {
   const [media, setMedia] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchMedia() {
+    const fetchMedia = async () => {
       try {
-        const res = await fetch("/api/media");
-        const data = await res.json();
-        setMedia(data || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+        const res = await axios.get("/api/media");
+        setMedia(res.data.resources);
+      } catch (error) {
+        console.error("Error fetching media:", error);
       }
-    }
+    };
     fetchMedia();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-black text-white">
-        Loading videos...
-      </div>
-    );
-  }
-
-  if (media.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-black text-white">
-        No media found.
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-black text-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
+    <div className="h-screen w-screen overflow-y-scroll snap-y snap-mandatory">
       {media.map((item) => (
-        <div key={item.public_id} className="w-full">
+        <div
+          key={item.asset_id}
+          className="h-screen w-screen flex items-center justify-center snap-start bg-black"
+        >
           {item.resource_type === "video" ? (
             <video
               src={item.secure_url}
               controls
+              autoPlay
               loop
-              className="w-full rounded-lg"
+              className="h-full w-full object-cover"
             />
           ) : (
             <img
               src={item.secure_url}
-              alt={item.public_id}
-              className="w-full rounded-lg"
+              alt="media"
+              className="h-full w-full object-cover"
             />
           )}
         </div>
       ))}
     </div>
   );
-      }
+                   }
