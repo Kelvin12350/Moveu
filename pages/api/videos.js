@@ -1,28 +1,33 @@
-// /pages/api/videos.js
-import { v2 as cloudinary } from "cloudinary";
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
+// pages/api/videos.js
 export default async function handler(req, res) {
   try {
-    const result = await cloudinary.api.resources({
-      resource_type: "video",
-      type: "upload",
-      max_results: 30,
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
+    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+    const url = `https://api.cloudinary.com/v1_1/${cloudName}/resources/video/upload`;
+
+    const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Basic ${auth}`,
+      },
     });
 
-    const videos = result.resources.map((video) => ({
-      id: video.asset_id,
-      url: video.secure_url,
-    }));
+    if (!response.ok) {
+      const error = await response.text();
+      return res.status(500).json({ error: "Cloudinary fetch failed", details: error });
+    }
 
-    res.status(200).json(videos);
+    const data = await response.json();
+
+    // Only return the video URLs
+    const videos = data.resources.map((video) => video.secure_url);
+
+    res.status(200).json({ videos });
   } catch (error) {
-    console.error("Cloudinary fetch error:", error);
-    res.status(500).json({ error: "Failed to fetch videos" });
+    console.error("Error fetching Cloudinary videos:", error);
+    res.status(500).json({ error: "Something went wrong" });
   }
 }
