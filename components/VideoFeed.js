@@ -10,7 +10,7 @@ export default function VideoFeed({ videos }) {
       const container = containerRef.current;
       if (!container) return;
 
-      // Figure out which video is in view
+      // Find which video is closest to full screen
       const newIndex = Math.round(container.scrollTop / window.innerHeight);
       setActiveIndex(newIndex);
     };
