@@ -1,44 +1,46 @@
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+import { useState } from "react";
 
 export default function Home() {
-  const [videos, setVideos] = useState([]);
+  // List of online video URLs
+  const videos = [
+    "https://www.w3schools.com/html/mov_bbb.mp4",
+    "https://cdn.coverr.co/videos/coverr-a-lake-in-the-mountains-3740/1080p.mp4",
+    "https://cdn.coverr.co/videos/coverr-sunrise-in-the-city-3125/1080p.mp4",
+  ];
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      const { data, error } = await supabase.from("videos").select("*");
-      if (error) {
-        console.error("Error fetching videos:", error);
-      } else {
-        setVideos(data);
-      }
-    };
-    fetchVideos();
-  }, []);
+  const [current, setCurrent] = useState(0);
+
+  // Handle scroll/swipe with mouse wheel
+  const handleWheel = (e) => {
+    if (e.deltaY > 0) {
+      // scroll down → next video
+      setCurrent((prev) => (prev + 1) % videos.length);
+    } else {
+      // scroll up → previous video
+      setCurrent((prev) => (prev - 1 + videos.length) % videos.length);
+    }
+  };
 
   return (
-    <div className="bg-black text-white min-h-screen flex flex-col items-center">
-      {videos.map((video) => (
-        <div key={video.id} className="w-full h-screen relative">
-          <video
-            src={video.url}
-            className="w-full h-full object-cover"
-            controls
-            autoPlay
-            loop
-            muted
-            playsInline
-          />
-          <div className="absolute bottom-6 left-4 text-lg font-bold drop-shadow-lg">
-            {video.title}
-          </div>
-        </div>
-      ))}
+    <div
+      onWheel={handleWheel}
+      className="relative flex items-center justify-center h-screen w-screen bg-black overflow-hidden"
+    >
+      {/* Video */}
+      <video
+        key={videos[current]} // reload when video changes
+        src={videos[current]}
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-full h-full object-cover"
+      />
+
+      {/* Caption */}
+      <div className="absolute bottom-5 left-5 text-white text-lg font-bold">
+        Video {current + 1} / {videos.length}
+      </div>
     </div>
   );
-              }
+          }
