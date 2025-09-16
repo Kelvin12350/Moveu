@@ -1,50 +1,40 @@
-import { useEffect, useState, useRef } from "react";
+// /components/VideoFeed.js
+import { useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
 
 export default function VideoFeed() {
   const [videos, setVideos] = useState([]);
-  const containerRef = useRef(null);
 
   useEffect(() => {
     async function fetchVideos() {
-      const res = await fetch("/api/videos");
-      const data = await res.json();
-      setVideos(data.resources || []);
+      try {
+        const res = await fetch("/api/videos");
+        const data = await res.json();
+        setVideos(data);
+      } catch (err) {
+        console.error("Error fetching videos:", err);
+      }
     }
     fetchVideos();
   }, []);
 
-  // detect scroll to play only one video
-  const handleScroll = () => {
-    const container = containerRef.current;
-    const cards = container.querySelectorAll("video");
-
-    let middle = window.innerHeight / 2;
-    cards.forEach((video) => {
-      const rect = video.getBoundingClientRect();
-      if (rect.top <= middle && rect.bottom >= middle) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
-    });
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [videos]);
-
   return (
-    <div
-      ref={containerRef}
-      className="snap-y snap-mandatory h-screen overflow-scroll"
-    >
-      {videos.map((video, index) => (
-        <div key={index} className="snap-start h-screen">
-          <VideoCard videoUrl={video.secure_url} />
-        </div>
+    <div className="video-feed">
+      {videos.map((video) => (
+        <VideoCard key={video.id} url={video.url} />
       ))}
+
+      <style jsx>{`
+        .video-feed {
+          width: 100%;
+          height: 100vh;
+          overflow-y: scroll;
+          scroll-snap-type: y mandatory;
+        }
+        .video-feed > div {
+          scroll-snap-align: start;
+        }
+      `}</style>
     </div>
   );
-            }
+}
