@@ -1,0 +1,48 @@
+.app {
+  height: 100vh;
+  width: 100vw;
+  background: black;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+.video-container {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+}
+
+.video-player {
+  height: 95vh;   /* slightly smaller so it doesn’t overflow */
+  width: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  outline: none;
+  border: none;
+}
+
+/* Hide browser controls, filename, and pause/play overlay */
+video::-webkit-media-controls,
+video::-webkit-media-controls-enclosure,
+video::-webkit-media-controls-overlay-play-button,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+.video-title {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 0px 2px 6px rgba(0,0,0,0.7);
+}
