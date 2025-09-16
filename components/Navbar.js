@@ -1,25 +1,7 @@
-// components/Navbar.js
-import Link from "next/link";
-
 export default function Navbar() {
   return (
-    <nav
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        gap: "20px",
-        padding: "10px",
-        background: "#f5f5f5",
-        borderBottom: "1px solid #ddd",
-        marginBottom: "20px",
-      }}
-    >
-      <Link href="/" style={{ textDecoration: "none", color: "#0070f3" }}>
-        🏠 Home
-      </Link>
-      <Link href="/upload" style={{ textDecoration: "none", color: "#0070f3" }}>
-        📤 Upload
-      </Link>
+    <nav className="bg-gray-900 text-white px-6 py-4 shadow-md">
+      <h1 className="text-xl font-bold">My Video App</h1>
     </nav>
   );
 }
