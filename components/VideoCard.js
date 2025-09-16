@@ -1,11 +1,10 @@
 import { useRef, useState, useEffect } from "react";
 
-export default function VideoCard({ src, isActive }) {
+export default function VideoCard({ src, isActive, isMuted }) {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showControls, setShowControls] = useState(false);
 
-  // Auto play/pause when video becomes active
   useEffect(() => {
     if (videoRef.current) {
       if (isActive) {
@@ -18,7 +17,12 @@ export default function VideoCard({ src, isActive }) {
     }
   }, [isActive]);
 
-  // Toggle play/pause
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
   const togglePlayPause = () => {
     if (!videoRef.current) return;
 
@@ -31,7 +35,6 @@ export default function VideoCard({ src, isActive }) {
     }
   };
 
-  // Show pause/play button on tap (fade out after 2s)
   const handleTap = () => {
     setShowControls(true);
     setTimeout(() => setShowControls(false), 2000);
@@ -48,10 +51,10 @@ export default function VideoCard({ src, isActive }) {
         className="w-full h-full object-cover pointer-events-none"
         loop
         playsInline
-        muted
         controls={false}
       />
 
+      {/* ▶️ / ❚❚ Play-Pause button */}
       <button
         onClick={togglePlayPause}
         className={`absolute text-white text-6xl bg-black bg-opacity-40 p-4 rounded-full transition-opacity duration-500 ${
@@ -62,4 +65,4 @@ export default function VideoCard({ src, isActive }) {
       </button>
     </div>
   );
-        }
+}
