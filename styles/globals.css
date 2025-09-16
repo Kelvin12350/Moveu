@@ -1,37 +1,28 @@
-* {
+/* Global Styles */
+body {
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body, html, #__next {
-  height: 100%;
+  font-family: Arial, sans-serif;
   background: #000;
   color: #fff;
 }
 
+/* Video feed fullscreen */
 .feed {
-  height: 100vh;
-  overflow-y: auto;
-  scroll-snap-type: y mandatory;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .video-container {
-  height: 100vh;
-  scroll-snap-align: start;
   position: relative;
+  width: 100%;
+  height: 100vh; /* fullscreen */
+  overflow: hidden;
 }
 
-.video-element {
+video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.overlay {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  color: white;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
 }
