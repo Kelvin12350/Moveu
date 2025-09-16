@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
 
 export default function VideoFeed() {
@@ -11,25 +11,19 @@ export default function VideoFeed() {
         const data = await res.json();
         setVideos(data);
       } catch (err) {
-        console.error("Error fetching videos:", err);
+        console.error("Error fetching videos", err);
       }
     }
     fetchVideos();
   }, []);
 
   return (
-    <div className="snap-y snap-mandatory h-screen overflow-y-scroll">
-      {videos.length > 0 ? (
-        videos.map((url, idx) => (
-          <div key={idx} className="snap-start h-screen">
-            <VideoCard src={url} />
-          </div>
-        ))
-      ) : (
-        <div className="flex items-center justify-center h-screen text-white">
-          Loading videos...
+    <div className="snap-y snap-mandatory h-screen overflow-scroll">
+      {videos.map((video, idx) => (
+        <div key={idx} className="snap-center h-screen">
+          <VideoCard src={video} />
         </div>
-      )}
+      ))}
     </div>
   );
 }
