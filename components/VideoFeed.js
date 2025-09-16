@@ -1,39 +1,34 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import VideoCard from "./VideoCard";
 
 export default function VideoFeed({ videos }) {
-  const [currentVideo, setCurrentVideo] = useState(0);
-  const feedRef = useRef(null);
+  const containerRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!feedRef.current) return;
-      const { scrollTop, clientHeight } = feedRef.current;
-      const newIndex = Math.round(scrollTop / clientHeight);
-      if (newIndex !== currentVideo) {
-        setCurrentVideo(newIndex);
-      }
+      const container = containerRef.current;
+      if (!container) return;
+
+      // Figure out which video is in view
+      const newIndex = Math.round(container.scrollTop / window.innerHeight);
+      setActiveIndex(newIndex);
     };
 
-    const ref = feedRef.current;
-    ref.addEventListener("scroll", handleScroll);
+    const container = containerRef.current;
+    container.addEventListener("scroll", handleScroll);
 
-    return () => {
-      if (ref) ref.removeEventListener("scroll", handleScroll);
-    };
-  }, [currentVideo]);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div
-      ref={feedRef}
-      className="h-screen overflow-y-scroll snap-y snap-mandatory"
+      ref={containerRef}
+      className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide"
     >
       {videos.map((video, index) => (
-        <div key={video.id || index} className="snap-start h-screen">
-          <VideoCard
-            url={video.url}
-            playing={index === currentVideo}
-          />
+        <div key={video.id} className="snap-start h-screen w-full">
+          <VideoCard video={video} isActive={index === activeIndex} />
         </div>
       ))}
     </div>
