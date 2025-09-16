@@ -1,18 +1,10 @@
-import { supabase } from "../../lib/supabaseClient";
-
-export default async function handler(req, res) {
-  if (req.method === "GET") {
-    try {
-      const { data, error } = await supabase.from("videos").select("*");
-
-      if (error) throw error;
-
-      res.status(200).json(data);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+export default function handler(req, res) {
+  res.status(200).json([
+    {
+      id: 1,
+      title: "Cloudinary Demo Video",
+      url: "https://res.cloudinary.com/ds9cmu7sa/video/upload/v1757988413/c5845c1d50fc71193aef97eff1c4f66d_tk2cpp.mp4",
+      thumbnail: "https://img.youtube.com/vi/YE7VzlLtp-4/hqdefault.jpg"
     }
-  } else {
-    res.setHeader("Allow", ["GET"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
+  ]);
 }
