@@ -4,14 +4,14 @@ import VideoCard from "./VideoCard";
 export default function VideoFeed() {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Example video list (replace with Cloudinary URLs later)
+  // Example video list (replace with Cloudinary later)
   const videos = [
     "/videos/video1.mp4",
     "/videos/video2.mp4",
     "/videos/video3.mp4",
   ];
 
-  // Detect scroll to switch active video
+  // Detect which video is in view
   useEffect(() => {
     const handleScroll = () => {
       const index = Math.round(window.scrollY / window.innerHeight);
@@ -23,7 +23,7 @@ export default function VideoFeed() {
   }, []);
 
   return (
-    <div className="snap-y snap-mandatory h-screen overflow-scroll">
+    <div className="snap-y snap-mandatory h-screen overflow-scroll scrollbar-hide">
       {videos.map((src, index) => (
         <div key={index} className="snap-start h-screen">
           <VideoCard src={src} isActive={index === activeIndex} />
@@ -31,4 +31,4 @@ export default function VideoFeed() {
       ))}
     </div>
   );
-}
+    }
