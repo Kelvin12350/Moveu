@@ -1,63 +1,58 @@
 // components/VideoCard.js
-import { useRef, useState, useEffect } from "react";
-import { Volume2, VolumeX, Heart } from "lucide-react";
+import React, { useRef, useState } from "react";
+import { Volume2, VolumeX, Heart } from "lucide-react"; // icons
 
-export default function VideoCard({ video }) {
+const VideoCard = ({ src }) => {
   const videoRef = useRef(null);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const [liked, setLiked] = useState(false);
 
   const toggleMute = () => {
     if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      videoRef.current.muted = !muted;
+      setMuted(!muted);
     }
   };
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            videoRef.current.play();
-            setIsPlaying(true);
-          } else {
-            videoRef.current.pause();
-            setIsPlaying(false);
-          }
-        });
-      },
-      { threshold: 0.75 }
-    );
-
-    if (videoRef.current) observer.observe(videoRef.current);
-
-    return () => {
-      if (videoRef.current) observer.unobserve(videoRef.current);
-    };
-  }, []);
+  const toggleLike = () => {
+    setLiked(!liked);
+  };
 
   return (
-    <div className="relative w-full h-screen flex items-center justify-center bg-black overflow-hidden">
+    <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
+      {/* Video */}
       <video
         ref={videoRef}
-        src={video.secure_url}
-        className="w-full h-full object-contain"
+        src={src}
+        className="w-full h-full object-cover"
+        autoPlay
         loop
         playsInline
-        muted={isMuted}
+        muted={muted}
       />
-      {/* Mute/Unmute Button */}
-      <button
-        onClick={toggleMute}
-        className="absolute bottom-20 left-5 bg-black/50 p-3 rounded-full text-white"
-      >
-        {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-      </button>
-      {/* Heart Icon */}
-      <button className="absolute bottom-20 right-5 bg-black/50 p-3 rounded-full text-white">
-        <Heart size={24} />
-      </button>
+
+      {/* Buttons */}
+      <div className="absolute bottom-6 left-6 flex items-center space-x-4">
+        {/* Mute / Unmute */}
+        <button
+          onClick={toggleMute}
+          className="bg-black/50 text-white p-3 rounded-full"
+        >
+          {muted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+        </button>
+
+        {/* Like */}
+        <button
+          onClick={toggleLike}
+          className={`p-3 rounded-full ${
+            liked ? "bg-red-600 text-white" : "bg-black/50 text-white"
+          }`}
+        >
+          <Heart size={24} fill={liked ? "white" : "none"} />
+        </button>
+      </div>
     </div>
   );
-          }
+};
+
+export default VideoCard;
