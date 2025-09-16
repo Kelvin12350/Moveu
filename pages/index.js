@@ -3,11 +3,9 @@ import VideoFeed from "../components/VideoFeed";
 
 export default function Home() {
   return (
-    <div className="w-full min-h-screen bg-black text-white">
+    <div className="bg-black min-h-screen">
       <Navbar />
-      <main className="p-4">
-        <VideoFeed />
-      </main>
+      <VideoFeed />
     </div>
   );
 }
