@@ -1,5 +1,7 @@
-import "@/styles/globals.css";
+// pages/_app.js
+import React from 'react'
+import '../styles/globals.css' // <-- fixed relative import
 
-export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />;
+export default function MyApp({ Component, pageProps }) {
+  return <Component {...pageProps} />
 }
