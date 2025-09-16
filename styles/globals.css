@@ -1,29 +1,58 @@
-/* styles/globals.css */
-
-html, body {
+/* Reset default browser styles */
+* {
   margin: 0;
   padding: 0;
-  height: 100%;
-  width: 100%;
-  background-color: black;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
+  box-sizing: border-box;
 }
 
-#__next {
+/* Fullscreen app container */
+html, body, #__next {
   height: 100%;
   width: 100%;
+  background: black;
+  overflow: hidden; /* prevent unwanted scroll */
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Make video fullscreen */
+/* TikTok style video */
 video {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* crop to fill screen */
+  object-fit: cover; /* fill screen without distortion */
   background: black;
 }
 
-/* Ensure container uses full height */
-div {
-  box-sizing: border-box;
+/* Caption text */
+.caption {
+  position: absolute;
+  bottom: 1.25rem;   /* ~20px */
+  left: 1.25rem;
+  color: white;
+  font-size: 1.125rem; /* ~18px */
+  font-weight: bold;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.6);
+}
+
+/* Add smooth swipe transition between videos */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.5s ease;
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-50px);
+  transition: all 0.5s ease;
 }
