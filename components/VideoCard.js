@@ -1,15 +1,15 @@
-export default function VideoCard({ url, title }) {
+export default function VideoPlayer({ video }) {
   return (
     <div className="video-container">
       <video
-        className="video-player"
-        src={url}
+        src={video.url}
+        controls={false}
         autoPlay
         loop
         muted
         playsInline
-      ></video>
-      <div className="video-title">{title}</div>
+        className="video-player"
+      />
     </div>
   );
 }
