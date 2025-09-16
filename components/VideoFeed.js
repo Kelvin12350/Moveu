@@ -1,21 +1,33 @@
+import { useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
 
-const sampleVideos = [
-  {
-    title: "First Video",
-    url: "https://res.cloudinary.com/demo/video/upload/w_600,h_400,c_fill/sample.mp4"
-  },
-  {
-    title: "Second Video",
-    url: "https://res.cloudinary.com/demo/video/upload/w_600,h_400,c_fill/dog.mp4"
-  }
-];
-
 export default function VideoFeed() {
+  const [videos, setVideos] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    async function fetchVideos() {
+      const res = await fetch("/api/media");
+      const data = await res.json();
+      setVideos(data);
+    }
+    fetchVideos();
+  }, []);
+
+  const handleScroll = (e) => {
+    const index = Math.round(e.target.scrollTop / window.innerHeight);
+    setActiveIndex(index);
+  };
+
   return (
-    <div className="p-4">
-      {sampleVideos.map((video, idx) => (
-        <VideoCard key={idx} video={video} />
+    <div
+      className="h-screen overflow-y-scroll snap-y snap-mandatory"
+      onScroll={handleScroll}
+    >
+      {videos.map((video, i) => (
+        <div key={video.public_id} className="snap-start h-screen">
+          <VideoCard src={video.secure_url} isActive={i === activeIndex} />
+        </div>
       ))}
     </div>
   );
