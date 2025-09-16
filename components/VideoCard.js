@@ -1,17 +1,15 @@
-import React from "react";
-
-export default function VideoCard({ video }) {
+export default function VideoCard({ url, title }) {
   return (
     <div className="video-container">
       <video
         className="video-player"
-        src={video.url}
-        controls
-        loop
+        src={url}
         autoPlay
+        loop
         muted
-      />
-      <p className="video-caption">{video.title}</p>
+        playsInline
+      ></video>
+      <div className="video-title">{title}</div>
     </div>
   );
 }
