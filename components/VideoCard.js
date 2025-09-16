@@ -1,42 +1,39 @@
-import { useRef, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import VideoCard from "./VideoCard";
 
-export default function VideoCard({ resource }) {
-  const videoRef = useRef(null);
-  const [isMuted, setIsMuted] = useState(true);
+export default function VideoFeed() {
+  const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  if (resource.resource_type === "image") {
-    return (
-      <div className="w-full flex justify-center items-center bg-black rounded-xl">
-        <img
-          src={resource.secure_url}
-          alt="Cloudinary Image"
-          className="max-h-[600px] rounded-xl"
-        />
-      </div>
-    );
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const { data } = await axios.get("/api/videos");
+        setResources(data);
+      } catch (err) {
+        console.error("Error fetching resources:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResources();
+  }, []);
+
+  if (loading) {
+    return <p className="text-center mt-10">Loading feed...</p>;
+  }
+
+  if (!resources.length) {
+    return <p className="text-center mt-10">No videos or images found in Cloudinary</p>;
   }
 
   return (
-    <div className="relative w-full flex justify-center items-center bg-black rounded-xl">
-      <video
-        ref={videoRef}
-        src={resource.secure_url}
-        autoPlay
-        loop
-        muted={isMuted}
-        playsInline
-        className="max-h-[600px] rounded-xl"
-      />
-      <button
-        onClick={() => {
-          setIsMuted(!isMuted);
-          videoRef.current.muted = !videoRef.current.muted;
-        }}
-        className="absolute bottom-4 right-4 bg-white/70 rounded-full p-2"
-      >
-        {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-      </button>
+    <div className="flex flex-col items-center space-y-6 py-6">
+      {resources.map((res) => (
+        <VideoCard key={res.asset_id} resource={res} />
+      ))}
     </div>
   );
-          }
+}
