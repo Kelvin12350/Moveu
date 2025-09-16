@@ -9,15 +9,13 @@ cloudinary.config({
 export default async function handler(req, res) {
   try {
     const result = await cloudinary.search
-      .expression("resource_type:video") // fetch only videos
+      .expression("resource_type:video")
       .sort_by("created_at", "desc")
-      .max_results(50) // adjust how many videos you want
+      .max_results(30)
       .execute();
 
-    const videos = result.resources.map((file) => file.secure_url);
-    res.status(200).json(videos);
+    res.status(200).json(result);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch videos" });
+    res.status(500).json({ error: error.message });
   }
 }
