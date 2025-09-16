@@ -1,77 +1,41 @@
-import { useRef, useState, useEffect } from "react";
+import VideoFeed from "../components/VideoFeed";
 
-const videos = [
-  {
-    id: 1,
-    url: "https://res.cloudinary.com/ds9cmu7sa/video/upload/v1757988413/c5845c1d50fc71193aef97eff1c4f66d_tk2cpp.mp4"
-  },
-  {
-    id: 2,
-    url: "https://res.cloudinary.com/demo/video/upload/w_800,h_1200,c_fill/elephants.mp4"
-  },
-  {
-    id: 3,
-    url: "https://res.cloudinary.com/demo/video/upload/w_800,h_1200,c_fill/dog.mp4"
-  }
-];
+// Helper function to shuffle videos
+function shuffleArray(array) {
+  return array
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+}
 
-export default function Home() {
-  const videoRefs = useRef([]);
-  const [currentVideo, setCurrentVideo] = useState(0);
-  const [muted, setMuted] = useState(true);
-
-  // Handle scroll - only play the visible video
-  const handleScroll = () => {
-    const newIndex = Math.round(window.scrollY / window.innerHeight);
-    setCurrentVideo(newIndex);
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    videoRefs.current.forEach((video, index) => {
-      if (video) {
-        if (index === currentVideo) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-          video.currentTime = 0;
-        }
-      }
-    });
-  }, [currentVideo]);
-
+export default function Home({ videos }) {
   return (
-    <div className="h-screen w-screen overflow-y-scroll snap-y snap-mandatory">
-      {videos.map((video, index) => (
-        <div
-          key={video.id}
-          className="h-screen w-screen flex items-center justify-center bg-black snap-start relative"
-        >
-          <video
-            ref={(el) => (videoRefs.current[index] = el)}
-            src={video.url}
-            className="h-full w-full object-cover"
-            muted={muted}
-            playsInline
-            loop
-          />
-        </div>
-      ))}
-
-      {/* Mute/Unmute button */}
-      <button
-        onClick={() => setMuted(!muted)}
-        className="fixed bottom-20 right-6 bg-white text-black px-4 py-2 rounded-full shadow-lg"
-      >
-        {muted ? "Unmute" : "Mute"}
-      </button>
+    <div className="h-screen w-full">
+      <VideoFeed videos={videos} />
     </div>
   );
-            }
+}
+
+// Static example (replace later with Supabase fetch)
+export async function getServerSideProps() {
+  const videos = shuffleArray([
+    {
+      id: 1,
+      url: "https://res.cloudinary.com/ds9cmu7sa/video/upload/v1757988413/c5845c1d50fc71193aef97eff1c4f66d_tk2cpp.mp4",
+    },
+    {
+      id: 2,
+      url: "https://res.cloudinary.com/demo/video/upload/w_800,h_600,c_fill/elephants.mp4",
+    },
+    {
+      id: 3,
+      url: "https://res.cloudinary.com/demo/video/upload/w_800,h_600,c_fill/dog.mp4",
+    },
+  ]);
+
+  return {
+    props: {
+      videos,
+    },
+  };
+}
