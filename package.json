@@ -1,7 +1,6 @@
 {
-  "name": "cloudinary-video-feed",
+  "name": "next-cloudinary-app",
   "version": "1.0.0",
-  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,15 +8,15 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "cloudinary": "^2.0.0",
-    "lucide-react": "^0.370.0",
-    "next": "13.4.10",
+    "cloudinary": "^1.41.0",
+    "lucide-react": "^0.263.0",
+    "next": "13.4.12",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "tailwindcss": "^3.3.0",
-    "postcss": "^8.4.23",
-    "autoprefixer": "^10.4.14"
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.3.2"
   }
 }
