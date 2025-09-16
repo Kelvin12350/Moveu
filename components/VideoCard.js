@@ -1,35 +1,45 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 export default function VideoCard({ src }) {
   const videoRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
 
-  const toggleMute = () => {
-    const video = videoRef.current;
-    if (video) {
-      video.muted = !video.muted;
-      setIsMuted(video.muted);
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
     }
+  }, [isMuted]);
+
+  const toggleMute = () => {
+    setIsMuted((prev) => !prev);
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-black">
+    <div className="relative w-full h-screen flex items-center justify-center bg-black">
       <video
         ref={videoRef}
         src={src}
+        className="w-full h-full object-cover"
         autoPlay
         loop
         playsInline
         muted={isMuted}
-        className="w-full h-full object-cover"
       />
 
-      {/* Mute / Unmute Button */}
+      {/* Mute/Unmute button */}
       <button
         onClick={toggleMute}
-        className="absolute bottom-6 right-6 bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-md shadow-lg"
+        className="absolute bottom-4 left-4 bg-white rounded-full p-2 shadow-lg"
       >
-        {isMuted ? "🔇" : "🔊"}
+        {isMuted ? (
+          <span role="img" aria-label="muted">
+            🔇
+          </span>
+        ) : (
+          <span role="img" aria-label="unmuted">
+            🔊
+          </span>
+        )}
       </button>
     </div>
   );
