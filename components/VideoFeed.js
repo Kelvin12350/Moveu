@@ -1,33 +1,16 @@
-import { useState } from "react";
 import VideoCard from "./VideoCard";
 
 export default function VideoFeed() {
-  const [activeVideo, setActiveVideo] = useState(null);
-
-  const handlePlay = (videoEl) => {
-    if (activeVideo && activeVideo !== videoEl) {
-      activeVideo.pause();
-    }
-    setActiveVideo(videoEl);
-  };
+  const videos = [
+    { id: 1, src: "/sample.mp4", title: "First Video" },
+    { id: 2, src: "/sample2.mp4", title: "Second Video" },
+  ];
 
   return (
-    <div className="space-y-6 p-6">
-      <VideoCard
-        src="https://res.cloudinary.com/demo/video/upload/w_600,c_fill/sample.mp4"
-        onPlay={handlePlay}
-      />
-      <VideoCard
-        src="https://res.cloudinary.com/demo/video/upload/w_600,c_fill/dog.mp4"
-        onPlay={handlePlay}
-      />
-      <div className="w-full max-w-md mx-auto rounded-lg overflow-hidden shadow-lg">
-        <img
-          src="https://res.cloudinary.com/demo/image/upload/sample.jpg"
-          alt="Cloudinary Image"
-          className="w-full"
-        />
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+      {videos.map((video) => (
+        <VideoCard key={video.id} video={video} />
+      ))}
     </div>
   );
 }
