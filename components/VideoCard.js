@@ -1,39 +1,77 @@
-"use client";
-import { useRef, useEffect, useState } from "react";
+// components/VideoCard.js
+import { useRef, useState, useEffect } from "react";
 
-export default function VideoCard({ src, isActive }) {
+export default function VideoCard({ url, isActive }) {
   const videoRef = useRef(null);
-  const [muted, setMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showControls, setShowControls] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
 
+  // Auto play/pause when in view
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
     if (isActive) {
-      video.play().catch(() => {});
+      videoRef.current.play();
+      setIsPlaying(true);
     } else {
-      video.pause();
+      videoRef.current.pause();
+      setIsPlaying(false);
     }
   }, [isActive]);
 
+  // Hide play/pause after 2s
+  useEffect(() => {
+    if (showControls) {
+      const timer = setTimeout(() => setShowControls(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showControls]);
+
+  const handleTogglePlay = () => {
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handleToggleMute = () => {
+    setIsMuted(!isMuted);
+    videoRef.current.muted = !videoRef.current.muted;
+  };
+
   return (
-    <div className="relative w-full h-full">
+    <div
+      className="relative w-full h-screen flex items-center justify-center bg-black"
+      onClick={() => setShowControls(true)}
+    >
       <video
         ref={videoRef}
-        src={src}
-        muted={muted}
+        src={url}
+        className="w-full h-full object-cover"
+        muted={isMuted}
         loop
         playsInline
-        className="w-full h-full object-cover"
       />
 
-      {/* Mute / Unmute Button */}
+      {/* Play / Pause Button */}
+      {showControls && (
+        <button
+          onClick={handleTogglePlay}
+          className="absolute text-white text-6xl opacity-80"
+        >
+          {isPlaying ? "⏸" : "▶️"}
+        </button>
+      )}
+
+      {/* Mute / Unmute Button (top-right) */}
       <button
-        onClick={() => setMuted(!muted)}
-        className="absolute bottom-6 right-6 bg-black/50 text-white px-4 py-2 rounded-full text-sm"
+        onClick={handleToggleMute}
+        className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-2 rounded-full"
       >
-        {muted ? "Unmute" : "Mute"}
+        {isMuted ? "🔇" : "🔊"}
       </button>
     </div>
   );
-          }
+      }
