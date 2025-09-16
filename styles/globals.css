@@ -1,57 +1,29 @@
-/* Reset and base styles */
+/* styles/globals.css */
+
 html, body {
-  padding: 0;
   margin: 0;
+  padding: 0;
   height: 100%;
   width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  background: black;
-  color: white;
-  overflow: hidden; /* Prevent scrollbars */
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* Main app container */
-.app {
-  height: 100vh;
-  width: 100vw;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-}
-
-/* Video feed container */
-.video-feed {
-  height: 100%;
-  width: 100%;
-}
-
-/* Each video container */
-.video-container {
-  position: relative;
-  height: 100vh;
-  width: 100%;
-  scroll-snap-align: start;
+  background-color: black;
   overflow: hidden;
+  font-family: Arial, sans-serif;
 }
 
-/* Video player styling */
-.video-player {
+#__next {
   height: 100%;
   width: 100%;
-  object-fit: cover;
 }
 
-/* Video caption styling */
-.video-caption {
-  position: absolute;
-  bottom: 60px;
-  left: 20px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #fff;
-  text-shadow: 0px 0px 10px rgba(0,0,0,0.8);
+/* Make video fullscreen */
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* crop to fill screen */
+  background: black;
+}
+
+/* Ensure container uses full height */
+div {
+  box-sizing: border-box;
 }
