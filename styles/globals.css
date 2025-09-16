@@ -1,28 +1,57 @@
-/* Global Styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fullscreen app */
+html,
 body {
+  padding: 0;
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #000;
-  color: #fff;
-}
-
-/* Video feed fullscreen */
-.feed {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  height: 100%;
   width: 100%;
-}
-
-.video-container {
-  position: relative;
-  width: 100%;
-  height: 100vh; /* fullscreen */
+  background: black;
+  color: white;
+  font-family: sans-serif;
   overflow: hidden;
 }
 
+/* Smooth vertical scroll */
+body {
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbars on all browsers */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Video container full screen */
 video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  background: black;
+}
+
+/* Play overlay */
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Snap effect like TikTok */
+.snap-y {
+  scroll-snap-type: y mandatory;
+}
+.snap-start {
+  scroll-snap-align: start;
 }
