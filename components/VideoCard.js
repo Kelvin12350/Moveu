@@ -1,36 +1,63 @@
-import { useRef, useEffect, useState } from "react";
+// components/VideoCard.js
+import { useRef, useState, useEffect } from "react";
+import { Volume2, VolumeX, Heart } from "lucide-react";
 
-export default function VideoCard({ src, isActive }) {
+export default function VideoCard({ video }) {
   const videoRef = useRef(null);
-  const [muted, setMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
 
   useEffect(() => {
-    if (videoRef.current) {
-      if (isActive) {
-        videoRef.current.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
-      }
-    }
-  }, [isActive]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            videoRef.current.play();
+            setIsPlaying(true);
+          } else {
+            videoRef.current.pause();
+            setIsPlaying(false);
+          }
+        });
+      },
+      { threshold: 0.75 }
+    );
+
+    if (videoRef.current) observer.observe(videoRef.current);
+
+    return () => {
+      if (videoRef.current) observer.unobserve(videoRef.current);
+    };
+  }, []);
 
   return (
-    <div className="relative h-full w-full flex items-center justify-center bg-black">
+    <div className="relative w-full h-screen flex items-center justify-center bg-black overflow-hidden">
       <video
         ref={videoRef}
-        src={src}
-        muted={muted}
+        src={video.secure_url}
+        className="w-full h-full object-contain"
         loop
         playsInline
-        className="h-full w-full object-cover"
+        muted={isMuted}
       />
-      {/* Mute / Unmute button stays in corner */}
+      {/* Mute/Unmute Button */}
       <button
-        onClick={() => setMuted(!muted)}
-        className="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-lg"
+        onClick={toggleMute}
+        className="absolute bottom-20 left-5 bg-black/50 p-3 rounded-full text-white"
       >
-        {muted ? "Unmute" : "Mute"}
+        {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+      </button>
+      {/* Heart Icon */}
+      <button className="absolute bottom-20 right-5 bg-black/50 p-3 rounded-full text-white">
+        <Heart size={24} />
       </button>
     </div>
   );
-}
+          }
