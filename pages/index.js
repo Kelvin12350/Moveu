@@ -1,14 +1,12 @@
-// /pages/index.js
+// pages/index.js
 import dynamic from "next/dynamic";
 
-const VideoFeed = dynamic(() => import("../components/VideoFeed"), {
-  ssr: false,
-});
+const VideoFeed = dynamic(() => import("../components/VideoFeed"), { ssr: false });
 
 export default function Home() {
   return (
-    <div>
+    <main className="h-screen w-full bg-black">
       <VideoFeed />
-    </div>
+    </main>
   );
 }
