@@ -1,6 +1,5 @@
-// components/VideoFeed.js
+import axios from "axios";
 import { useEffect, useState } from "react";
-import VideoCard from "./VideoCard";
 
 export default function VideoFeed() {
   const [videos, setVideos] = useState([]);
@@ -8,22 +7,24 @@ export default function VideoFeed() {
   useEffect(() => {
     async function fetchVideos() {
       try {
-        const res = await fetch("/api/videos");
-        const data = await res.json();
-        setVideos(data);
+        const res = await axios.get("/api/videos");
+        setVideos(res.data);
       } catch (err) {
-        console.error("Error fetching videos", err);
+        console.error("Error fetching videos:", err);
       }
     }
     fetchVideos();
   }, []);
 
   return (
-    <div className="snap-y snap-mandatory h-screen w-full overflow-scroll">
+    <div className="grid gap-4">
       {videos.map((video) => (
-        <div key={video.asset_id} className="snap-start">
-          <VideoCard video={video} />
-        </div>
+        <video
+          key={video.id}
+          src={video.url}
+          controls
+          className="w-full rounded-lg shadow"
+        />
       ))}
     </div>
   );
