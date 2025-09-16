@@ -1,22 +1,35 @@
-/* styles/globals.css */
-
-/* Reset margins, paddings, and make sure the app takes full screen */
+/* Make each video fullscreen */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  width: 100%;
   background: black;
-  overflow: hidden; /* Prevent scrolling */
+  overflow: hidden;
 }
 
-/* Apply border-box sizing globally */
-* {
-  box-sizing: border-box;
+.app {
+  height: 100vh;
+  width: 100vw;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
 }
 
-/* Ensure Next.js root div covers full screen */
-#__next {
+.video-feed {
+  display: flex;
+  flex-direction: column;
+}
+
+.video-container {
+  height: 100vh;
+  width: 100vw;
+  scroll-snap-align: start;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.video-player {
   height: 100%;
   width: 100%;
+  object-fit: cover;
 }
