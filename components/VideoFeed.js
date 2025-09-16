@@ -6,59 +6,45 @@ export default function VideoFeed() {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        // 🔑 Replace with your actual Cloudinary cloud name + folder
-        const res = await fetch(
-          "https://res.cloudinary.com/YOUR_CLOUD_NAME/video/list/moveu.json"
-        );
-        const data = await res.json();
-        setVideos(data.resources || []);
-      } catch (err) {
-        console.error("Error fetching videos:", err);
-      }
-    };
-
+    async function fetchVideos() {
+      const res = await fetch("/api/videos");
+      const data = await res.json();
+      setVideos(data.resources || []);
+    }
     fetchVideos();
   }, []);
 
-  // Auto play only the video in view
-  useEffect(() => {
+  // detect scroll to play only one video
+  const handleScroll = () => {
     const container = containerRef.current;
-    if (!container) return;
+    const cards = container.querySelectorAll("video");
 
-    const videos = container.querySelectorAll("video");
+    let middle = window.innerHeight / 2;
+    cards.forEach((video) => {
+      const rect = video.getBoundingClientRect();
+      if (rect.top <= middle && rect.bottom >= middle) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.play();
-          } else {
-            entry.target.pause();
-          }
-        });
-      },
-      { threshold: 0.7 }
-    );
-
-    videos.forEach((video) => observer.observe(video));
-
-    return () => {
-      videos.forEach((video) => observer.unobserve(video));
-    };
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [videos]);
 
   return (
     <div
       ref={containerRef}
-      className="h-screen w-full overflow-y-scroll snap-y snap-mandatory"
+      className="snap-y snap-mandatory h-screen overflow-scroll"
     >
-      {videos.map((video, i) => (
-        <div key={i} className="h-screen w-full snap-start">
-          <VideoCard src={video.secure_url} />
+      {videos.map((video, index) => (
+        <div key={index} className="snap-start h-screen">
+          <VideoCard videoUrl={video.secure_url} />
         </div>
       ))}
     </div>
   );
-        }
+            }
