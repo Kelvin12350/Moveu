@@ -1,41 +1,22 @@
 import VideoFeed from "../components/VideoFeed";
 
-// Helper function to shuffle videos
-function shuffleArray(array) {
-  return array
-    .map((value) => ({ value, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ value }) => value);
-}
-
-export default function Home({ videos }) {
+export default function Home() {
   return (
-    <div className="h-screen w-full">
-      <VideoFeed videos={videos} />
+    <div className="h-screen w-full flex flex-col bg-black text-white">
+      {/* ✅ Navbar */}
+      <header className="w-full h-14 flex items-center justify-between px-5 bg-black/80 border-b border-gray-800">
+        <h1 className="text-xl font-bold">My Video App</h1>
+        <nav className="flex gap-4 text-sm">
+          <button className="hover:text-red-500">Home</button>
+          <button className="hover:text-red-500">Explore</button>
+          <button className="hover:text-red-500">Profile</button>
+        </nav>
+      </header>
+
+      {/* ✅ Main feed */}
+      <main className="flex-1">
+        <VideoFeed />
+      </main>
     </div>
   );
-}
-
-// Static example (replace later with Supabase fetch)
-export async function getServerSideProps() {
-  const videos = shuffleArray([
-    {
-      id: 1,
-      url: "https://res.cloudinary.com/ds9cmu7sa/video/upload/v1757988413/c5845c1d50fc71193aef97eff1c4f66d_tk2cpp.mp4",
-    },
-    {
-      id: 2,
-      url: "https://res.cloudinary.com/demo/video/upload/w_800,h_600,c_fill/elephants.mp4",
-    },
-    {
-      id: 3,
-      url: "https://res.cloudinary.com/demo/video/upload/w_800,h_600,c_fill/dog.mp4",
-    },
-  ]);
-
-  return {
-    props: {
-      videos,
-    },
-  };
-}
+        }
