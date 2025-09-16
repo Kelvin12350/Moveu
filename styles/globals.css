@@ -1,33 +1,48 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Remove scrollbars (desktop & mobile) */
-html,
-body {
+/* Reset margin/padding */
+* {
   margin: 0;
   padding: 0;
-  height: 100%;
-  overflow: hidden;
-  background: black;
-}
-
-* {
   box-sizing: border-box;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+/* Make body take full height */
+html,
+body {
+  height: 100%;
+  background-color: black;
+  overflow: hidden; /* no side scroll */
+  font-family: Arial, sans-serif;
 }
 
-/* Make videos full screen with no borders */
+/* Scroll snapping like TikTok */
+.snap-y {
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.snap-start {
+  scroll-snap-align: start;
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
 video {
+  object-fit: cover;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* fill the screen like TikTok */
-  background: black;
+}
+
+/* Button styling */
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+/* Smooth scroll effect */
+html {
+  scroll-behavior: smooth;
 }
