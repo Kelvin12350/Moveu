@@ -1,46 +1,74 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import VideoCard from "../components/VideoCard";
 
 export default function Home() {
-  const [videos, setVideos] = useState([]);
+  const [media, setMedia] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVideos = async () => {
+    async function fetchMedia() {
       try {
         const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-        const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
-        const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
-        const res = await axios.get(
-          `https://api.cloudinary.com/v1_1/${cloudName}/resources/video`,
-          {
-            auth: {
-              username: apiKey,
-              password: apiSecret,
-            },
-          }
+        // Change "videos" to the tag/folder you used in Cloudinary
+        const res = await fetch(
+          `https://res.cloudinary.com/${cloudName}/image/list/videos.json`
         );
 
-        const videoList = res.data.resources.map((v) => v.secure_url);
-        setVideos(videoList);
-      } catch (error) {
-        console.error("Error fetching videos:", error);
-      }
-    };
+        if (!res.ok) {
+          throw new Error("Failed to fetch media");
+        }
 
-    fetchVideos();
+        const data = await res.json();
+
+        // Cloudinary returns resources in "resources"
+        setMedia(data.resources || []);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
+    }
+
+    fetchMedia();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black text-white">
+        Loading videos...
+      </div>
+    );
+  }
+
+  if (media.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black text-white">
+        No media found.
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black">
-      {videos.length > 0 ? (
-        videos.map((video, index) => (
-          <VideoCard key={index} src={video} />
-        ))
-      ) : (
-        <p className="text-white">Loading videos...</p>
-      )}
+    <div className="min-h-screen bg-black text-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
+      {media.map((item) => (
+        <div key={item.public_id} className="w-full">
+          {item.format === "mp4" || item.resource_type === "video" ? (
+            <video
+              src={item.secure_url}
+              controls
+              autoPlay={false}
+              loop
+              className="w-full rounded-lg"
+            />
+          ) : (
+            <img
+              src={item.secure_url}
+              alt={item.public_id}
+              className="w-full rounded-lg"
+            />
+          )}
+        </div>
+      ))}
     </div>
   );
-                   }
+      }
