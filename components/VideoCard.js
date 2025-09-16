@@ -5,7 +5,7 @@ export default function VideoCard({ src, isActive }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showControls, setShowControls] = useState(false);
 
-  // Play/pause depending on active status
+  // Auto play/pause when video becomes active
   useEffect(() => {
     if (videoRef.current) {
       if (isActive) {
@@ -31,12 +31,10 @@ export default function VideoCard({ src, isActive }) {
     }
   };
 
-  // Show button on tap, auto-hide after 2s
+  // Show pause/play button on tap (fade out after 2s)
   const handleTap = () => {
     setShowControls(true);
-    setTimeout(() => {
-      setShowControls(false);
-    }, 2000);
+    setTimeout(() => setShowControls(false), 2000);
   };
 
   return (
@@ -47,20 +45,21 @@ export default function VideoCard({ src, isActive }) {
       <video
         ref={videoRef}
         src={src}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover pointer-events-none"
         loop
         playsInline
         muted
+        controls={false}
       />
 
-      {showControls && (
-        <button
-          onClick={togglePlayPause}
-          className="absolute text-white text-6xl bg-black bg-opacity-40 p-4 rounded-full"
-        >
-          {isPlaying ? "❚❚" : "▶"}
-        </button>
-      )}
+      <button
+        onClick={togglePlayPause}
+        className={`absolute text-white text-6xl bg-black bg-opacity-40 p-4 rounded-full transition-opacity duration-500 ${
+          showControls ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        {isPlaying ? "❚❚" : "▶"}
+      </button>
     </div>
   );
-          }
+        }
