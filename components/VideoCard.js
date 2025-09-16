@@ -1,44 +1,40 @@
-import { useRef, useState, useEffect } from "react";
-import { Volume2, VolumeX } from "lucide-react"; // mute/unmute icons
+import { useRef, useState } from "react";
+import { Volume2, VolumeX, Heart } from "lucide-react";
 
 export default function VideoCard({ src }) {
   const videoRef = useRef(null);
-  const [isMuted, setIsMuted] = useState(true);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // prevents autoplay block errors
-      });
-    }
-  }, []);
+  const [muted, setMuted] = useState(true);
 
   const toggleMute = () => {
     if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      videoRef.current.muted = !videoRef.current.muted;
+      setMuted(videoRef.current.muted);
     }
   };
 
   return (
-    <div className="relative w-full h-screen bg-black overflow-hidden">
+    <div className="relative h-screen w-full bg-black flex items-center justify-center">
       <video
         ref={videoRef}
         src={src}
-        className="w-full h-full object-cover" // fills entire screen
-        autoPlay
-        loop
+        className="h-full w-full object-cover"
         playsInline
-        muted={isMuted}
+        loop
+        muted={muted}
       />
 
-      {/* Mute/Unmute Button */}
+      {/* 🔈 Mute/Unmute */}
       <button
         onClick={toggleMute}
-        className="absolute bottom-20 right-5 p-3 bg-black/50 rounded-full text-white"
+        className="absolute bottom-20 right-5 bg-black/50 p-3 rounded-full text-white"
       >
-        {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+        {muted ? <VolumeX size={24} /> : <Volume2 size={24} />}
       </button>
+
+      {/* ❤️ Like Icon (placeholder, no function yet) */}
+      <div className="absolute bottom-36 right-5 flex flex-col items-center">
+        <Heart size={32} className="text-white" />
+      </div>
     </div>
   );
-}
+        }
