@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabaseClient'
 
 export default function VideoFeed() {
   const [videos, setVideos] = useState([])
@@ -34,4 +34,4 @@ export default function VideoFeed() {
       ))}
     </div>
   )
-              }
+}
