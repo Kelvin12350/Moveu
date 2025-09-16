@@ -1,49 +1,63 @@
 import { useState } from "react";
 
 export default function Upload() {
-  const [file, setFile] = useState(null);
+  const [video, setVideo] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [videoUrl, setVideoUrl] = useState("");
+  const [uploadedUrl, setUploadedUrl] = useState(null);
+
+  const handleFileChange = (e) => {
+    setVideo(e.target.files[0]);
+  };
 
   const handleUpload = async () => {
-    if (!file) return alert("Please select a video first!");
+    if (!video) return alert("Please select a video first!");
     setUploading(true);
 
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "tiktok_upload"); // your unsigned preset
+    formData.append("file", video);
+    formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
 
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/ds9cmu7sa/video/upload",
-      { method: "POST", body: formData }
-    );
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/video/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-    const data = await res.json();
-    setVideoUrl(data.secure_url);
-
-    // save to our fake DB (/api/videos)
-    await fetch("/api/videos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: data.secure_url }),
-    });
-
-    setUploading(false);
+      const data = await res.json();
+      setUploadedUrl(data.secure_url);
+      setUploading(false);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      setUploading(false);
+    }
   };
 
   return (
-    <div style={{ padding: 20, textAlign: "center" }}>
-      <h2>Upload Video</h2>
-      <input type="file" accept="video/*" onChange={(e) => setFile(e.target.files[0])} />
-      <br />
-      <button onClick={handleUpload} disabled={uploading}>
+    <div className="flex flex-col items-center justify-center min-h-screen p-6">
+      <h1 className="text-2xl font-bold mb-4">Upload a Video</h1>
+      <input type="file" accept="video/*" onChange={handleFileChange} />
+      <button
+        onClick={handleUpload}
+        disabled={uploading}
+        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg"
+      >
         {uploading ? "Uploading..." : "Upload"}
       </button>
 
-      {videoUrl && (
-        <div style={{ marginTop: 20 }}>
-          <h3>Uploaded Video:</h3>
-          <video src={videoUrl} controls width="300" />
+      {uploadedUrl && (
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold">Uploaded Video:</h2>
+          <video
+            src={uploadedUrl}
+            controls
+            autoPlay
+            loop
+            muted
+            className="w-[300px] md:w-[500px] mt-4 rounded-lg"
+          />
         </div>
       )}
     </div>
