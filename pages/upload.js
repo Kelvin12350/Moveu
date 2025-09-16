@@ -1,91 +1,51 @@
 import { useState } from "react";
-import { supabase } from "../supabase";
-import Navbar from "../components/Navbar";
 
 export default function Upload() {
   const [file, setFile] = useState(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
 
-  async function handleUpload() {
-    if (!file) return alert("Please choose a video file");
+  const handleUpload = async () => {
+    if (!file) return alert("Please select a video first!");
+    setUploading(true);
 
-    const filename = `${Date.now()}-${file.name}`;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "tiktok_upload"); // your unsigned preset
 
-    const { error: uploadError } = await supabase.storage
-      .from("videos")
-      .upload(filename, file);
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/ds9cmu7sa/video/upload",
+      { method: "POST", body: formData }
+    );
 
-    if (uploadError) {
-      alert("Upload failed: " + uploadError.message);
-      return;
-    }
+    const data = await res.json();
+    setVideoUrl(data.secure_url);
 
-    const { data: publicUrl } = supabase.storage
-      .from("videos")
-      .getPublicUrl(filename);
+    // save to our fake DB (/api/videos)
+    await fetch("/api/videos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: data.secure_url }),
+    });
 
-    const { error: insertError } = await supabase.from("videos").insert([
-      {
-        title,
-        description,
-        url: publicUrl.publicUrl,
-        filename,
-      },
-    ]);
-
-    if (insertError) {
-      alert("Database insert failed: " + insertError.message);
-      return;
-    }
-
-    alert("Video uploaded successfully 🎉");
-    setFile(null);
-    setTitle("");
-    setDescription("");
-  }
+    setUploading(false);
+  };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-      <Navbar />
-      <h1 style={{ textAlign: "center" }}>📤 Upload a Video</h1>
-
-      <input
-        type="text"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        style={{ display: "block", marginBottom: "10px", width: "100%" }}
-      />
-
-      <input
-        type="text"
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        style={{ display: "block", marginBottom: "10px", width: "100%" }}
-      />
-
-      <input
-        type="file"
-        accept="video/*"
-        onChange={(e) => setFile(e.target.files[0])}
-        style={{ display: "block", marginBottom: "10px", width: "100%" }}
-      />
-
-      <button
-        onClick={handleUpload}
-        style={{
-          padding: "10px 20px",
-          background: "#0070f3",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        Upload
+    <div style={{ padding: 20, textAlign: "center" }}>
+      <h2>Upload Video</h2>
+      <input type="file" accept="video/*" onChange={(e) => setFile(e.target.files[0])} />
+      <br />
+      <button onClick={handleUpload} disabled={uploading}>
+        {uploading ? "Uploading..." : "Upload"}
       </button>
+
+      {videoUrl && (
+        <div style={{ marginTop: 20 }}>
+          <h3>Uploaded Video:</h3>
+          <video src={videoUrl} controls width="300" />
+        </div>
+      )}
     </div>
   );
-                    }
+        }
