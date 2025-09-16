@@ -1,17 +1,21 @@
-import Head from 'next/head'
-import VideoFeed from '../components/VideoFeed'
+import { useEffect, useState } from "react";
+import VideoFeed from "../components/VideoFeed";
 
 export default function Home() {
-  return (
-    <div>
-      <Head>
-        <title>TikTok Clone</title>
-        <meta name="description" content="TikTok Clone built with Next.js and Supabase" />
-      </Head>
+  const [videos, setVideos] = useState([]);
 
-      <main className="app">
-        <VideoFeed />
-      </main>
-    </div>
-  )
+  useEffect(() => {
+    async function fetchVideos() {
+      const res = await fetch("/api/videos");
+      const data = await res.json();
+      setVideos(data);
+    }
+    fetchVideos();
+  }, []);
+
+  return (
+    <main className="app">
+      <VideoFeed videos={videos} />
+    </main>
+  );
 }
