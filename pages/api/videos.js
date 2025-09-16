@@ -7,20 +7,16 @@ cloudinary.config({
 });
 
 export default async function handler(req, res) {
-  if (req.method === "GET") {
-    try {
-      const { resources } = await cloudinary.search
-        .expression("folder:moveu_media AND resource_type:video")
-        .sort_by("created_at", "desc")
-        .max_results(20)
-        .execute();
+  try {
+    const result = await cloudinary.api.resources({
+      resource_type: "video",
+      type: "upload",
+      max_results: 30,
+    });
 
-      res.status(200).json(resources);
-    } catch (error) {
-      console.error("Fetch Error:", error);
-      res.status(500).json({ error: "Failed to fetch videos" });
-    }
-  } else {
-    res.status(405).json({ error: "Method not allowed" });
+    res.status(200).json(result.resources);
+  } catch (error) {
+    console.error("Cloudinary fetch error:", error);
+    res.status(500).json({ error: "Failed to fetch videos" });
   }
 }
