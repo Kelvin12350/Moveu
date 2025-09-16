@@ -1,52 +1,35 @@
-import { useRef, useState, useEffect } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import React, { useRef, useState } from "react";
 
-export default function VideoCard({ video }) {
+export default function VideoCard({ src }) {
   const videoRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            videoRef.current.play();
-          } else {
-            videoRef.current.pause();
-          }
-        });
-      },
-      { threshold: 0.8 } // 80% visible = considered active
-    );
-
-    if (videoRef.current) {
-      observer.observe(videoRef.current);
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (video) {
+      video.muted = !video.muted;
+      setIsMuted(video.muted);
     }
-
-    return () => {
-      if (videoRef.current) {
-        observer.unobserve(videoRef.current);
-      }
-    };
-  }, []);
+  };
 
   return (
-    <div className="relative h-screen w-full snap-start">
+    <div className="relative w-full h-screen overflow-hidden bg-black">
       <video
         ref={videoRef}
-        src={video.url}
-        className="h-full w-full object-cover"
+        src={src}
+        autoPlay
         loop
-        muted={isMuted}
         playsInline
+        muted={isMuted}
+        className="w-full h-full object-cover"
       />
 
-      {/* Mute/Unmute Button */}
+      {/* Mute / Unmute Button */}
       <button
-        onClick={() => setIsMuted(!isMuted)}
-        className="absolute bottom-5 left-5 p-2 rounded-full bg-black/40 text-white"
+        onClick={toggleMute}
+        className="absolute bottom-6 right-6 bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-md shadow-lg"
       >
-        {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+        {isMuted ? "🔇" : "🔊"}
       </button>
     </div>
   );
