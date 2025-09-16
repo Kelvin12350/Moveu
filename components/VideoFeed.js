@@ -1,44 +1,33 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import VideoCard from "./VideoCard";
 
 export default function VideoFeed() {
-  const [videos, setVideos] = useState([]);
+  const [activeVideo, setActiveVideo] = useState(null);
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const res = await axios.get(
-          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/resources/video`,
-          {
-            params: { max_results: 5 },
-            auth: {
-              username: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-              password: process.env.CLOUDINARY_API_SECRET,
-            },
-          }
-        );
-        setVideos(res.data.resources);
-      } catch (err) {
-        console.error("Error fetching videos:", err);
-      }
-    };
-    fetchVideos();
-  }, []);
-
-  if (!videos || videos.length === 0) {
-    return (
-      <div className="text-white flex items-center justify-center h-screen">
-        No videos found
-      </div>
-    );
-  }
+  const handlePlay = (videoEl) => {
+    if (activeVideo && activeVideo !== videoEl) {
+      activeVideo.pause();
+    }
+    setActiveVideo(videoEl);
+  };
 
   return (
-    <div className="space-y-6 p-4">
-      {videos.map((video) => (
-        <VideoCard key={video.asset_id} video={video} />
-      ))}
+    <div className="space-y-6 p-6">
+      <VideoCard
+        src="https://res.cloudinary.com/demo/video/upload/w_600,c_fill/sample.mp4"
+        onPlay={handlePlay}
+      />
+      <VideoCard
+        src="https://res.cloudinary.com/demo/video/upload/w_600,c_fill/dog.mp4"
+        onPlay={handlePlay}
+      />
+      <div className="w-full max-w-md mx-auto rounded-lg overflow-hidden shadow-lg">
+        <img
+          src="https://res.cloudinary.com/demo/image/upload/sample.jpg"
+          alt="Cloudinary Image"
+          className="w-full"
+        />
+      </div>
     </div>
   );
-      }
+}
