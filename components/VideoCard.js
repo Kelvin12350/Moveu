@@ -18,49 +18,36 @@ export default function VideoCard({ video }) {
   };
 
   return (
-    <div className="relative w-full h-screen flex items-center justify-center bg-black">
+    <div className="relative w-full h-screen bg-black">
       {/* Video */}
       <video
         ref={videoRef}
-        src={video.url}
-        muted={isMuted}
-        loop
-        autoPlay
-        playsInline
+        src={video.secure_url}
         className="w-full h-full object-cover"
+        autoPlay
+        loop
+        muted={isMuted}
       />
 
-      {/* Right side icons */}
-      <div className="absolute right-4 bottom-24 flex flex-col items-center space-y-6 text-white">
-        {/* Like */}
+      {/* Controls */}
+      <div className="absolute right-4 bottom-20 flex flex-col items-center space-y-4">
         <button
           onClick={handleLike}
-          className="flex flex-col items-center hover:scale-110 transition"
+          className="text-white flex flex-col items-center"
         >
           <Heart className="w-8 h-8" />
-          <span className="text-sm">{likes}</span>
+          <span>{likes}</span>
         </button>
-
-        {/* Comment */}
-        <button className="flex flex-col items-center hover:scale-110 transition">
+        <button className="text-white">
           <MessageCircle className="w-8 h-8" />
-          <span className="text-sm">0</span>
         </button>
-
-        {/* Share */}
-        <button className="flex flex-col items-center hover:scale-110 transition">
+        <button className="text-white">
           <Share2 className="w-8 h-8" />
-          <span className="text-sm">0</span>
+        </button>
+        <button onClick={toggleMute} className="text-white">
+          {isMuted ? <VolumeX className="w-8 h-8" /> : <Volume2 className="w-8 h-8" />}
         </button>
       </div>
-
-      {/* Mute/Unmute button */}
-      <button
-        onClick={toggleMute}
-        className="absolute bottom-6 left-6 bg-black bg-opacity-50 p-2 rounded-full text-white"
-      >
-        {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-      </button>
     </div>
   );
-          }
+            }
