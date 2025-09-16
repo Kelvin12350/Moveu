@@ -2,58 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* General body styles */
+/* Remove scrollbars (desktop & mobile) */
+html,
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  overflow: hidden;
   background: black;
-  color: white;
-  overflow: hidden; /* Prevent unwanted scrollbars */
 }
 
-/* Smooth scrolling like TikTok */
-html {
-  scroll-behavior: smooth;
+* {
+  box-sizing: border-box;
 }
 
-/* Full screen scroll container */
-.scroll-container {
-  height: 100vh;
-  width: 100vw;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  -webkit-overflow-scrolling: touch;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
-/* Each video section */
-.scroll-section {
-  height: 100vh;
-  width: 100vw;
-  scroll-snap-align: start;
-  position: relative;
-}
-
-/* Hide default video controls and overlays */
-video::-webkit-media-controls {
-  display: none !important;
-}
-video::-webkit-media-controls-enclosure {
-  display: none !important;
-}
-video::-webkit-media-controls-panel {
-  display: none !important;
-}
-
-/* Ensure video fills screen */
+/* Make videos full screen with no borders */
 video {
-  object-fit: cover;
   width: 100%;
   height: 100%;
+  object-fit: cover; /* fill the screen like TikTok */
   background: black;
-}
-
-/* Hide any unwanted corner focus/outline */
-:focus {
-  outline: none !important;
-  box-shadow: none !important;
 }
