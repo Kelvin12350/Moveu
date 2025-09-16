@@ -1,58 +1,49 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState, useRef } from "react";
 
 export default function Home() {
   const [videos, setVideos] = useState([]);
-  const [uploading, setUploading] = useState(false);
+  const videoRefs = useRef([]);
 
-  const handleUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  useEffect(() => {
+    async function fetchVideos() {
+      const res = await fetch("/api/videos");
+      const data = await res.json();
+      setVideos(data);
+    }
+    fetchVideos();
+  }, []);
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
-    reader.onloadend = async () => {
-      setUploading(true);
-      try {
-        const res = await axios.post("/api/upload", { file: reader.result });
-        setVideos((prev) => [...prev, { url: res.data.url }]);
-      } catch (error) {
-        console.error("Upload failed:", error);
+  const handlePlay = (index) => {
+    videoRefs.current.forEach((video, i) => {
+      if (video && i !== index) {
+        video.pause();
       }
-      setUploading(false);
-    };
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-4">Moveu</h1>
+    <div className="min-h-screen p-6">
+      <h1 className="text-2xl font-bold mb-6">Moveu</h1>
 
-      <label className="px-4 py-2 bg-blue-600 rounded-lg cursor-pointer">
-        {uploading ? "Uploading..." : "Upload"}
-        <input
-          type="file"
-          accept="video/*"
-          className="hidden"
-          onChange={handleUpload}
-        />
-      </label>
-
-      <div className="mt-6 space-y-6">
-        {videos.map((video, idx) => (
+      <div className="flex flex-col space-y-6">
+        {videos.map((video, index) => (
           <div
-            key={idx}
-            className="bg-gray-800 p-4 rounded-xl shadow-md flex flex-col items-center"
+            key={video.id}
+            className="bg-gray-800 p-4 rounded-2xl shadow-lg"
           >
             <video
-              src={video.url}
+              ref={(el) => (videoRefs.current[index] = el)}
               controls
-              className="rounded-lg w-full max-w-md"
-            />
-            <p className="mt-2">Video {idx + 1}</p>
+              className="w-full rounded-lg"
+              onPlay={() => handlePlay(index)}
+            >
+              <source src={video.url} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            <p className="mt-2">{video.title}</p>
           </div>
         ))}
       </div>
     </div>
   );
-    }
+                }
