@@ -6,12 +6,12 @@ export default function Home() {
     <div>
       <Head>
         <title>TikTok Clone</title>
-        <meta name="description" content="TikTok Clone App" />
-        <link rel="icon" href="/favicon.ico" />
+        <meta name="description" content="TikTok Clone built with Next.js and Supabase" />
       </Head>
 
-      {/* Main Video Feed */}
-      <VideoFeed />
+      <main className="app">
+        <VideoFeed />
+      </main>
     </div>
   )
 }
