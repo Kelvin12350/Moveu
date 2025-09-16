@@ -2,108 +2,69 @@ import { useEffect, useState, useRef } from "react";
 
 export default function Home() {
   const [videos, setVideos] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [muted, setMuted] = useState(true);
+  const containerRef = useRef(null);
   const videoRefs = useRef([]);
-  const touchStartY = useRef(0);
 
   useEffect(() => {
-    async function fetchVideos() {
+    const fetchVideos = async () => {
       try {
         const res = await fetch("/api/videos");
         const data = await res.json();
-        setVideos(data.resources || []);
+        setVideos(data);
       } catch (err) {
         console.error("Error fetching videos:", err);
       }
-    }
+    };
     fetchVideos();
   }, []);
 
-  // Scroll on desktop
+  // Auto play only one video per screen
   useEffect(() => {
-    const handleWheel = (e) => {
-      if (e.deltaY > 0) {
-        setCurrentIndex((prev) => Math.min(prev + 1, videos.length - 1));
-      } else {
-        setCurrentIndex((prev) => Math.max(prev - 1, 0));
-      }
-    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.8 }
+    );
 
-    window.addEventListener("wheel", handleWheel);
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, [videos.length]);
-
-  // Swipe on mobile
-  useEffect(() => {
-    const handleTouchStart = (e) => {
-      touchStartY.current = e.touches[0].clientY;
-    };
-
-    const handleTouchEnd = (e) => {
-      const deltaY = e.changedTouches[0].clientY - touchStartY.current;
-      if (deltaY > 50) {
-        setCurrentIndex((prev) => Math.max(prev - 1, 0)); // swipe down
-      } else if (deltaY < -50) {
-        setCurrentIndex((prev) => Math.min(prev + 1, videos.length - 1)); // swipe up
-      }
-    };
-
-    window.addEventListener("touchstart", handleTouchStart);
-    window.addEventListener("touchend", handleTouchEnd);
+    videoRefs.current.forEach((video) => {
+      if (video) observer.observe(video);
+    });
 
     return () => {
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchend", handleTouchEnd);
+      videoRefs.current.forEach((video) => {
+        if (video) observer.unobserve(video);
+      });
     };
-  }, [videos.length]);
-
-  // Snap + play only current video
-  useEffect(() => {
-    window.scrollTo({
-      top: window.innerHeight * currentIndex,
-      behavior: "smooth",
-    });
-
-    videoRefs.current.forEach((video, index) => {
-      if (video) {
-        if (index === currentIndex) {
-          video.play();
-        } else {
-          video.pause();
-        }
-      }
-    });
-  }, [currentIndex]);
-
-  const toggleMute = () => {
-    setMuted((prev) => !prev);
-    videoRefs.current.forEach((video) => {
-      if (video) {
-        video.muted = !video.muted;
-      }
-    });
-  };
+  }, [videos]);
 
   return (
-    <div className="app-container">
+    <div
+      ref={containerRef}
+      className="snap-y snap-mandatory h-screen overflow-scroll scrollbar-hide"
+    >
       {videos.map((video, index) => (
-        <div key={video.public_id} className="video-page">
+        <div
+          key={video.public_id}
+          className="snap-start h-screen w-screen flex justify-center items-center bg-black relative"
+        >
           <video
             ref={(el) => (videoRefs.current[index] = el)}
             src={video.secure_url}
-            muted={muted}
-            loop
+            className="h-full w-full object-cover"
             playsInline
-            className="video-player"
+            muted
+            loop
           />
         </div>
       ))}
-
-      {/* Mute/Unmute button */}
-      <button className="mute-button" onClick={toggleMute}>
-        {muted ? "🔇" : "🔊"}
-      </button>
     </div>
   );
-    }
+            }
