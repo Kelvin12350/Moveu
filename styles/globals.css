@@ -1,31 +1,42 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: hidden;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-.container {
+.app-container {
   height: 100vh;
-  width: 100vw;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  scroll-behavior: smooth;
 }
 
-.video-wrapper {
+.video-page {
   height: 100vh;
-  width: 100vw;
-  scroll-snap-align: start;
-  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
 }
 
-video {
+.video-player {
   height: 100%;
   width: 100%;
   object-fit: cover;
+}
+
+/* Mute button */
+.mute-button {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 28px;
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
 }
