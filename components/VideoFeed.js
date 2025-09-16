@@ -1,100 +1,38 @@
-import { useEffect, useState, useRef } from "react";
+"use client";
+import { useState, useEffect } from "react";
+import VideoCard from "./VideoCard";
 
-export default function VideoFeed() {
-  const [videos, setVideos] = useState([]);
-  const [paused, setPaused] = useState({});
-  const videoRefs = useRef([]);
+export default function VideoFeed({ videos }) {
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    async function loadVideos() {
-      const res = await fetch("/api/test-db");
-      const data = await res.json();
-      if (data.ok) setVideos(data.data || data.sampleVideos || []);
-    }
-    loadVideos();
-  }, []);
+    const handleScroll = () => {
+      const sections = document.querySelectorAll(".scroll-section");
+      let newIndex = activeIndex;
 
-  // Intersection Observer: play only the video in view
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const video = entry.target;
-          if (entry.isIntersecting) {
-            video.play().catch(() => {});
-            setPaused((prev) => ({ ...prev, [video.dataset.index]: false }));
-          } else {
-            video.pause();
-            setPaused((prev) => ({ ...prev, [video.dataset.index]: true }));
-          }
-        });
-      },
-      { threshold: 0.7 }
-    );
-
-    videoRefs.current.forEach((video) => {
-      if (video) observer.observe(video);
-    });
-
-    return () => {
-      videoRefs.current.forEach((video) => {
-        if (video) observer.unobserve(video);
+      sections.forEach((section, i) => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
+          newIndex = i;
+        }
       });
-    };
-  }, [videos]);
 
-  // Tap to toggle play/pause
-  const handleToggle = (i) => {
-    const video = videoRefs.current[i];
-    if (video.paused) {
-      video.play();
-      setPaused((prev) => ({ ...prev, [i]: false }));
-    } else {
-      video.pause();
-      setPaused((prev) => ({ ...prev, [i]: true }));
-    }
-  };
+      if (newIndex !== activeIndex) {
+        setActiveIndex(newIndex);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [activeIndex]);
 
   return (
-    <div className="h-screen w-screen overflow-y-scroll snap-y snap-mandatory scrollbar-hide">
+    <div className="scroll-container">
       {videos.map((video, i) => (
-        <div
-          key={i}
-          className="h-screen w-full snap-start flex items-center justify-center bg-black relative"
-        >
-          <video
-            ref={(el) => (videoRefs.current[i] = el)}
-            src={video.url}
-            loop
-            playsInline
-            data-index={i}
-            className="h-full w-full object-cover"
-            onClick={() => handleToggle(i)}
-          />
-          {/* Overlay Play Icon */}
-          {paused[i] && (
-            <div
-              className="absolute inset-0 flex items-center justify-center bg-black/30"
-              onClick={() => handleToggle(i)}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="white"
-                viewBox="0 0 24 24"
-                stroke="white"
-                className="w-20 h-20 opacity-90"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 3l14 9-14 9V3z"
-                />
-              </svg>
-            </div>
-          )}
+        <div key={i} className="scroll-section">
+          <VideoCard src={video.url} isActive={i === activeIndex} />
         </div>
       ))}
     </div>
   );
-        }
+}
