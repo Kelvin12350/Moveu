@@ -1,45 +1,38 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import VideoPlayer from "../components/VideoPlayer";
 
 export default function Home() {
-  const [media, setMedia] = useState([]);
+  const [activeVideo, setActiveVideo] = useState(null);
 
-  useEffect(() => {
-    const fetchMedia = async () => {
-      try {
-        const res = await axios.get("/api/media");
-        setMedia(res.data.resources);
-      } catch (error) {
-        console.error("Error fetching media:", error);
-      }
-    };
-    fetchMedia();
-  }, []);
+  const handlePlay = (videoEl) => {
+    if (activeVideo && activeVideo !== videoEl) {
+      activeVideo.pause();
+    }
+    setActiveVideo(videoEl);
+  };
 
   return (
-    <div className="h-screen w-screen overflow-y-scroll snap-y snap-mandatory">
-      {media.map((item) => (
-        <div
-          key={item.asset_id}
-          className="h-screen w-screen flex items-center justify-center snap-start bg-black"
-        >
-          {item.resource_type === "video" ? (
-            <video
-              src={item.secure_url}
-              controls
-              autoPlay
-              loop
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <img
-              src={item.secure_url}
-              alt="media"
-              className="h-full w-full object-cover"
-            />
-          )}
-        </div>
-      ))}
+    <div className="space-y-6 p-6">
+      {/* Example Video 1 */}
+      <VideoPlayer
+        src="https://res.cloudinary.com/demo/video/upload/w_600,c_fill/sample.mp4"
+        onPlay={handlePlay}
+      />
+
+      {/* Example Video 2 */}
+      <VideoPlayer
+        src="https://res.cloudinary.com/demo/video/upload/w_600,c_fill/dog.mp4"
+        onPlay={handlePlay}
+      />
+
+      {/* Example Image */}
+      <div className="w-full max-w-md mx-auto rounded-lg overflow-hidden shadow-lg">
+        <img
+          src="https://res.cloudinary.com/demo/image/upload/sample.jpg"
+          alt="Cloudinary Image"
+          className="w-full"
+        />
+      </div>
     </div>
   );
-                   }
+          }
